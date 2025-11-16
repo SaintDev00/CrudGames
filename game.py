@@ -67,24 +67,24 @@ def aplicar_llamada_amigo(stdscr, opciones, indice_correcta):
     stdscr.nodelay(True)
     curses.curs_set(0)
     
-    #Crear temporizador de 1 minuto para la llamada
+    # Crear temporizador de 1 minuto para la llamada
     temporizador_llamada = TemporizadorPregunta(60)
     temporizador_llamada.iniciar()
     
-    #El amigo tiene 70% de probabilidad de acertar
+    # El amigo tiene 70% de probabilidad de acertar
     if random.random() < 0.7:
         respuesta_amigo = indice_correcta
     else:
         respuesta_amigo = random.choice([i for i in range(len(opciones)) if i != indice_correcta])
     
-    #Esperar mientras el temporizador corre
+    # Esperar mientras el temporizador corre
     while temporizador_llamada.tiempo_restante > 0:
         stdscr.clear()
         
-        #Obtener dimensiones de la pantalla
+        # Obtener dimensiones de la pantalla
         altura, ancho = stdscr.getmaxyx()
         
-        #Dibujar temporizador en la esquina superior derecha
+        # Dibujar temporizador en la esquina superior derecha
         x_temporizador = ancho - 15
         dibujar_temporizador(stdscr, temporizador_llamada, 0, x_temporizador)
         
@@ -92,16 +92,15 @@ def aplicar_llamada_amigo(stdscr, opciones, indice_correcta):
         stdscr.addstr(4, 0, "Tienes 1 minuto para llamar a tu amigo", curses.color_pair(4))
         stdscr.addstr(6, 0, "Ring... Ring... Ring...", curses.color_pair(6))
         
-        #Mostrar la sugerencia del amigo después de 3 segundos
+        # Mostrar la sugerencia del amigo después de 3 segundos
         if temporizador_llamada.tiempo_restante <= 57:
-            stdscr.addstr(8, 0, "¡Tu amigo contestó!", curses.color_pair(2))
-            stdscr.addstr(10, 0, f"Amigo: 'Creo que es: {opciones[respuesta_amigo]}'", curses.color_pair(2) | curses.A_BOLD)
+            stdscr.addstr(8, 0, "¡Tu amigo contestó?!", curses.color_pair(2))
         
         stdscr.addstr(altura - 2, 0, "Presione cualquier tecla para regresar a la pregunta...", curses.color_pair(4))
         
         stdscr.refresh()
         
-        #Verificar si el usuario presiona una tecla para salir antes
+        # Verificar si el usuario presiona una tecla para salir antes
         try:
             tecla = stdscr.getch()
             if tecla != -1 and temporizador_llamada.tiempo_restante <= 57:
@@ -123,7 +122,7 @@ def aplicar_pregunta_publico(stdscr, opciones, indice_correcta):
     stdscr.refresh()
     time.sleep(2)
     
-    #Generar porcentajes (la respuesta correcta tiene mayor probabilidad)
+    # Generar porcentajes (la respuesta correcta tiene mayor probabilidad)
     porcentajes = [0] * len(opciones)
     porcentajes[indice_correcta] = random.randint(40, 60)
     
@@ -136,7 +135,7 @@ def aplicar_pregunta_publico(stdscr, opciones, indice_correcta):
                 porcentajes[i] = random.randint(5, restante // 2)
                 restante -= porcentajes[i]
     
-    #Ajustar para que sume exactamente 100
+    # Ajustar para que sume exactamente 100
     diferencia = 100 - sum(porcentajes)
     porcentajes[indice_correcta] += diferencia
     
@@ -197,7 +196,7 @@ def dibujar_temporizador(stdscr, temporizador, y_pos, x_pos):
     tiempo_texto = temporizador.obtener_tiempo_restante()
     color = temporizador.obtener_color()
     
-    #Dibujar cuadro decorativo
+    # Dibujar cuadro decorativo
     stdscr.addstr(y_pos, x_pos, "╔══════════╗", curses.color_pair(color))
     stdscr.addstr(y_pos + 1, x_pos, "║  TIEMPO  ║", curses.color_pair(color))
     stdscr.addstr(y_pos + 2, x_pos, f"║  {tiempo_texto}  ║", curses.color_pair(color) | curses.A_BOLD)
@@ -208,16 +207,16 @@ def seleccionar_opcion(stdscr, texto, opciones, comodines, indice_correcta, opci
     curses.curs_set(0)
     posicion_seleccion = 0
     
-    #Crear y iniciar temporizador
+    # Crear y iniciar temporizador
     temporizador = TemporizadorPregunta(tiempo_limite)
     temporizador.iniciar()
     
-    #Configurar para no bloquear en getch
+    # Configurar para no bloquear en getch
     stdscr.nodelay(True)
     
     continuar = True
     while continuar:
-        #Verificar si el tiempo se agotó
+        # Verificar si el tiempo se agotó
         if temporizador.tiempo_agotado:
             temporizador.detener()
             stdscr.nodelay(False)
@@ -225,14 +224,14 @@ def seleccionar_opcion(stdscr, texto, opciones, comodines, indice_correcta, opci
         
         stdscr.clear()
         
-        #Obtener dimensiones de la pantalla
+        # Obtener dimensiones de la pantalla
         altura, ancho = stdscr.getmaxyx()
         
-        #Dibujar temporizador en la esquina superior derecha
+        # Dibujar temporizador en la esquina superior derecha
         x_temporizador = ancho - 15
         dibujar_temporizador(stdscr, temporizador, 0, x_temporizador)
         
-        #Mostrar comodines disponibles
+        # Mostrar comodines disponibles
         comodines_texto = "Comodines: "
         if comodines["50_50"]:
             comodines_texto += "[1] 50:50  "
@@ -286,7 +285,7 @@ def seleccionar_opcion(stdscr, texto, opciones, comodines, indice_correcta, opci
                 if posicion_seleccion not in opciones_eliminadas:
                     continuar = False
             
-            #Comodines (pausan el temporizador)
+            # Comodines (pausan el temporizador)
             elif tecla_presionada == ord('1') and comodines["50_50"]:
                 temporizador.detener()
                 stdscr.nodelay(False)
@@ -307,7 +306,7 @@ def seleccionar_opcion(stdscr, texto, opciones, comodines, indice_correcta, opci
                 stdscr.nodelay(False)
                 aplicar_llamada_amigo(stdscr, opciones, indice_correcta)
                 comodines["llamada"] = False
-                #Reiniciar temporizador con el tiempo que tenía ANTES de usar el comodín
+                # Reiniciar temporizador con el tiempo que tenía ANTES de usar el comodín
                 temporizador = TemporizadorPregunta(tiempo_guardado)
                 temporizador.iniciar()
                 stdscr.nodelay(True)
@@ -323,7 +322,7 @@ def seleccionar_opcion(stdscr, texto, opciones, comodines, indice_correcta, opci
                 temporizador.iniciar()
                 stdscr.nodelay(True)
         
-        time.sleep(0.1)  #Pequeña pausa para no saturar la CPU
+        time.sleep(0.1)  # Pequeña pausa para no saturar la CPU
     
     temporizador.detener()
     stdscr.nodelay(False)
@@ -360,7 +359,7 @@ def juego_curses(stdscr):
     inicializar_colores()
     curses.curs_set(0)
     
-    #Inicializar comodines (cada uno se puede usar una vez)
+    # Inicializar comodines (cada uno se puede usar una vez)
     comodines = {
         "50_50": True,
         "llamada": True,
@@ -368,9 +367,9 @@ def juego_curses(stdscr):
     }
     
     niveles = [
-        ("Fácil", preguntas_faciles.copy(), 30),        #30 segundos
-        ("Intermedio", preguntas_intermedias.copy(), 40),  # 40segundos
-        ("Difícil", preguntas_dificiles.copy(), 60)      # 60segundos (1 minuto)
+        ("Fácil", preguntas_faciles.copy(), 30),        # 30 segundos
+        ("Intermedio", preguntas_intermedias.copy(), 40),  # 40 segundos
+        ("Difícil", preguntas_dificiles.copy(), 60)      # 60 segundos (1 minuto)
     ]
     
     puntuacion = 0
@@ -379,7 +378,7 @@ def juego_curses(stdscr):
         random.shuffle(lista)
         
         for indice, preg in enumerate(lista):
-            #Salir temporalmente de curses para mostrar la animación con el nivel
+            # Salir temporalmente de curses para mostrar la animación con el nivel
             curses.endwin()
             animacion_ruleta(nombre_nivel)
             stdscr = curses.initscr()
